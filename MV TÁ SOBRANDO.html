@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tá Sobrando | Controle Financeiro</title>
+
+  <style>
+    /* ==========================================
+       1. CONFIGURAÇÕES GERAIS
+       ========================================== */
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --principal: #173f35;
+      --principal-claro: #2f6b5c;
+      --fundo: #f4f7f5;
+      --branco: #ffffff;
+      --texto: #24312d;
+      --texto-suave: #6b7773;
+      --borda: #dce5e1;
+      --verde: #18864b;
+      --vermelho: #c0392b;
+      --neutro: #68756f;
+      --sombra: 0 8px 24px rgba(23, 63, 53, 0.08);
+      --raio: 16px;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--fundo);
+      color: var(--texto);
+      line-height: 1.5;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 20px 14px 40px;
+    }
+
+    /* ==========================================
+       2. CABEÇALHO
+       ========================================== */
+
+    .cabecalho {
+      background: var(--principal);
+      color: var(--branco);
+      border-radius: var(--raio);
+      padding: 24px 20px;
+      margin-bottom: 18px;
+      box-shadow: var(--sombra);
+    }
+
+    .marca {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    .subtitulo {
+      margin-top: 5px;
+      opacity: 0.86;
+      font-size: 14px;
+    }
+
+    /* ==========================================
+       3. DASHBOARD
+       ========================================== */
+
+    .dashboard {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .card {
+      background: var(--branco);
+      border: 1px solid var(--borda);
+      border-radius: var(--raio);
+      padding: 18px;
+      box-shadow: var(--sombra);
+    }
+
+    .card-titulo {
+      color: var(--texto-suave);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .card-valor {
+      display: block;
+      margin-top: 8px;
+      font-size: 24px;
+      font-weight: 800;
+    }
+
+    .valor-receita {
+      color: var(--verde);
+    }
+
+    .valor-despesa {
+      color: var(--vermelho);
+    }
+
+    .saldo-positivo {
+      color: var(--verde);
+    }
+
+    .saldo-negativo {
+      color: var(--vermelho);
+    }
+
+    .saldo-zero {
+      color: var(--neutro);
+    }
+
+    /* ==========================================
+       4. ESTRUTURA PRINCIPAL
+       ========================================== */
+
+    .grid-principal {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 18px;
+    }
+
+    .secao {
+      background: var(--branco);
+      border: 1px solid var(--borda);
+      border-radius: var(--raio);
+      padding: 20px;
+      box-shadow: var(--sombra);
+    }
+
+    .secao-titulo {
+      font-size: 19px;
+      margin-bottom: 5px;
+    }
+
+    .secao-descricao {
+      color: var(--texto-suave);
+      font-size: 13px;
+      margin-bottom: 18px;
+    }
+
+    /* ==========================================
+       5. FORMULÁRIO
+       ========================================== */
+
+    .campo {
+      margin-bottom: 14px;
+    }
+
+    .campo label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .campo input,
+    .campo select {
+      width: 100%;
+      border: 1px solid var(--borda);
+      border-radius: 10px;
+      padding: 12px;
+      background: #fff;
+      color: var(--texto);
+      outline: none;
+    }
+
+    .campo input:focus,
+    .campo select:focus {
+      border-color: var(--principal-claro);
+      box-shadow: 0 0 0 3px rgba(47, 107, 92, 0.12);
+    }
+
+    .ajuda {
+      display: block;
+      margin-top: 5px;
+      color: var(--texto-suave);
+      font-size: 11px;
+    }
+
+    .botao {
+      width: 100%;
+      border: 0;
+      border-radius: 10px;
+      padding: 13px 16px;
+      font-weight: 700;
+      transition: 0.2s;
+    }
+
+    .botao-principal {
+      background: var(--principal);
+      color: var(--branco);
+    }
+
+    .botao-principal:hover {
+      background: var(--principal-claro);
+    }
+
+    .botao-exportar {
+      background: #edf4f1;
+      color: var(--principal);
+      border: 1px solid #cfe0da;
+      margin-bottom: 14px;
+    }
+
+    .botao-exportar:hover {
+      background: #e1eee9;
+    }
+
+    /* ==========================================
+       6. MENSAGENS
+       ========================================== */
+
+    .mensagem {
+      display: none;
+      border-radius: 10px;
+      padding: 11px 12px;
+      margin-bottom: 14px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .mensagem.erro {
+      display: block;
+      background: #fdecea;
+      color: #9b2c20;
+      border: 1px solid #f4c7c2;
+    }
+
+    .mensagem.sucesso {
+      display: block;
+      background: #eaf7ef;
+      color: #176b3f;
+      border: 1px solid #c4e6d1;
+    }
+
+    /* ==========================================
+       7. HISTÓRICO
+       ========================================== */
+
+    .historico-cabecalho {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .tabela-container {
+      width: 100%;
+      overflow-x: auto;
+      border: 1px solid var(--borda);
+      border-radius: 10px;
+    }
+
+    table {
+      width: 100%;
+      min-width: 650px;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 11px 10px;
+      border-bottom: 1px solid var(--borda);
+      text-align: left;
+      font-size: 12px;
+    }
+
+    th {
+      background: #f3f7f5;
+      color: var(--texto-suave);
+      text-transform: uppercase;
+      font-size: 10px;
+      letter-spacing: 0.4px;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .tipo {
+      display: inline-block;
+      border-radius: 20px;
+      padding: 4px 8px;
+      font-size: 10px;
+      font-weight: 800;
+    }
+
+    .tipo-receita {
+      background: #e8f6ee;
+      color: var(--verde);
+    }
+
+    .tipo-despesa {
+      background: #fdebea;
+      color: var(--vermelho);
+    }
+
+    .valor-tabela-receita {
+      color: var(--verde);
+      font-weight: 700;
+    }
+
+    .valor-tabela-despesa {
+      color: var(--vermelho);
+      font-weight: 700;
+    }
+
+    .botao-excluir {
+      border: 0;
+      background: #fdebea;
+      color: var(--vermelho);
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      font-weight: 800;
+    }
+
+    .botao-excluir:hover {
+      background: #f8d6d2;
+    }
+
+    .vazio {
+      padding: 24px 12px;
+      text-align: center;
+      color: var(--texto-suave);
+      font-size: 13px;
+    }
+
+    /* ==========================================
+       8. RODAPÉ
+       ========================================== */
+
+    .rodape {
+      text-align: center;
+      color: var(--texto-suave);
+      font-size: 11px;
+      margin-top: 20px;
+    }
+
+    /* ==========================================
+       9. RESPONSIVIDADE
+       ========================================== */
+
+    @media (min-width: 700px) {
+      .app {
+        padding: 30px 24px 50px;
+      }
+
+      .dashboard {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .grid-principal {
+        grid-template-columns: 320px 1fr;
+        align-items: start;
+      }
+
+      .historico-cabecalho {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .botao-exportar {
+        width: auto;
+        margin-bottom: 0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="app">
+
+    <!-- ==========================================
+         10. CABEÇALHO DA APLICAÇÃO
+         ========================================== -->
+
+    <header class="cabecalho">
+      <div class="marca">Tá Sobrando</div>
+      <div class="subtitulo">
+        Controle financeiro para micro e pequenas empresas
+      </div>
+    </header>
+
+    <!-- ==========================================
+         11. DASHBOARD
+         ========================================== -->
+
+    <section class="dashboard">
+
+      <article class="card">
+        <span class="card-titulo">Total de Receitas</span>
+        <strong id="totalReceitas" class="card-valor valor-receita">
+          R$ 0,00
+        </strong>
+      </article>
+
+      <article class="card">
+        <span class="card-titulo">Total de Despesas</span>
+        <strong id="totalDespesas" class="card-valor valor-despesa">
+          R$ 0,00
+        </strong>
+      </article>
+
+      <article class="card">
+        <span class="card-titulo">Saldo Líquido Atual</span>
+        <strong id="saldoLiquido" class="card-valor saldo-zero">
+          R$ 0,00
+        </strong>
+      </article>
+
+    </section>
+
+    <!-- ==========================================
+         12. CONTEÚDO PRINCIPAL
+         ========================================== -->
+
+    <div class="grid-principal">
+
+      <!-- ==========================================
+           13. FORMULÁRIO DE LANÇAMENTO
+           ========================================== -->
+
+      <section class="secao">
+
+        <h2 class="secao-titulo">Novo lançamento</h2>
+
+        <p class="secao-descricao">
+          Registre uma receita ou despesa da empresa.
+        </p>
+
+        <div id="mensagem" class="mensagem"></div>
+
+        <form id="formLancamento">
+
+          <div class="campo">
+            <label for="descricao">Descrição do lançamento</label>
+            <input
+              type="text"
+              id="descricao"
+              maxlength="100"
+              placeholder="Ex.: Venda de serviço"
+              required
+            >
+          </div>
+
+          <div class="campo">
+            <label for="valor">Valor</label>
+            <input
+              type="number"
+              id="valor"
+              step="0.01"
+              placeholder="Ex.: 1500 ou -500"
+              required
+            >
+            <small class="ajuda">
+              Valor positivo = receita | Valor negativo = despesa
+            </small>
+          </div>
+
+          <div class="campo">
+            <label for="categoria">Categoria</label>
+            <select id="categoria" required>
+              <option value="">Selecione uma categoria</option>
+              <option value="Serviços Prestados">Serviços Prestados</option>
+              <option value="Venda de Mercadorias">Venda de Mercadorias</option>
+              <option value="Fornecedores">Fornecedores</option>
+              <option value="Impostos/DAS">Impostos/DAS</option>
+              <option value="Outros">Outros</option>
+            </select>
+          </div>
+
+          <div class="campo">
+            <label for="dataLancamento">Data do lançamento</label>
+            <input
+              type="date"
+              id="dataLancamento"
+              required
+            >
+          </div>
+
+          <button class="botao botao-principal" type="submit">
+            Adicionar lançamento
+          </button>
+
+        </form>
+      </section>
+
+      <!-- ==========================================
+           14. HISTÓRICO FINANCEIRO
+           ========================================== -->
+
+      <section class="secao">
+
+        <div class="historico-cabecalho">
+
+          <div>
+            <h2 class="secao-titulo">Histórico de lançamentos</h2>
+            <p class="secao-descricao">
+              Acompanhe as movimentações financeiras cadastradas.
+            </p>
+          </div>
+
+          <button
+            id="botaoExportar"
+            class="botao botao-exportar"
+            type="button"
+          >
+            Exportar relatório (CSV)
+          </button>
+
+        </div>
+
+        <div class="tabela-container">
+
+          <table>
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Descrição</th>
+                <th>Categoria</th>
+                <th>Tipo</th>
+                <th>Valor</th>
+                <th>Ação</th>
+              </tr>
+            </thead>
+
+            <tbody id="corpoTabela">
+              <!-- Os lançamentos serão inseridos pelo JavaScript -->
+            </tbody>
+          </table>
+
+          <div id="mensagemVazia" class="vazio">
+            Nenhum lançamento cadastrado.
+          </div>
+
+        </div>
+
+      </section>
+
+    </div>
+
+    <footer class="rodape">
+      Tá Sobrando — MVP acadêmico | Gestão + Tecnologia da Informação
+    </footer>
+
+  </main>
+
+  <script>
+    /* ==========================================
+       1. CONFIGURAÇÕES
+       ========================================== */
+
+    // Chave utilizada para armazenar os dados no navegador.
+    const CHAVE_STORAGE = "ta_sobrando_lancamentos";
+
+
+    /* ==========================================
+       2. ELEMENTOS DA INTERFACE
+       ========================================== */
+
+    const formLancamento = document.getElementById("formLancamento");
+    const descricaoInput = document.getElementById("descricao");
+    const valorInput = document.getElementById("valor");
+    const categoriaInput = document.getElementById("categoria");
+    const dataInput = document.getElementById("dataLancamento");
+
+    const totalReceitas = document.getElementById("totalReceitas");
+    const totalDespesas = document.getElementById("totalDespesas");
+    const saldoLiquido = document.getElementById("saldoLiquido");
+
+    const corpoTabela = document.getElementById("corpoTabela");
+    const mensagemVazia = document.getElementById("mensagemVazia");
+    const mensagem = document.getElementById("mensagem");
+    const botaoExportar = document.getElementById("botaoExportar");
+
+
+    /* ==========================================
+       3. DADOS DO APLICATIVO
+       ========================================== */
+
+    // Recupera os lançamentos salvos ou inicia com uma lista vazia.
+    let lancamentos = carregarLancamentos();
+
+
+    /* ==========================================
+       4. FUNÇÕES DE FORMATAÇÃO
+       ========================================== */
+
+    // Formata números para o padrão monetário brasileiro.
+    function formatarMoeda(valor) {
+      return valor.toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL"
+      });
+    }
+
+
+    // Converte uma data no formato AAAA-MM-DD para DD/MM/AAAA.
+    function formatarData(data) {
+      const partes = data.split("-");
+
+      if (partes.length !== 3) {
+        return data;
+      }
+
+      return `${partes[2]}/${partes[1]}/${partes[0]}`;
+    }
+
+
+    // Retorna a data atual no formato utilizado pelo input date.
+    function obterDataHoje() {
+      const hoje = new Date();
+
+      const ano = hoje.getFullYear();
+      const mes = String(hoje.getMonth() + 1).padStart(2, "0");
+      const dia = String(hoje.getDate()).padStart(2, "0");
+
+      return `${ano}-${mes}-${dia}`;
+    }
+
+
+    /* ==========================================
+       5. LOCALSTORAGE
+       ========================================== */
+
+    // Recupera os dados armazenados no navegador.
+    function carregarLancamentos() {
+      try {
+        const dados = localStorage.getItem(CHAVE_STORAGE);
+
+        if (!dados) {
+          return [];
+        }
+
+        const dadosConvertidos = JSON.parse(dados);
+
+        return Array.isArray(dadosConvertidos)
+          ? dadosConvertidos
+          : [];
+
+      } catch (erro) {
+        console.error("Erro ao carregar dados:", erro);
+        return [];
+      }
+    }
+
+
+    // Salva a lista atual de lançamentos no navegador.
+    function salvarLancamentos() {
+      try {
+        localStorage.setItem(
+          CHAVE_STORAGE,
+          JSON.stringify(lancamentos)
+        );
+      } catch (erro) {
+        mostrarMensagem(
+          "Não foi possível salvar os dados no navegador.",
+          "erro"
+        );
+      }
+    }
+
+
+    /* ==========================================
+       6. FUNÇÕES FINANCEIRAS
+       ========================================== */
+
+    // Calcula o total de receitas.
+    function calcularReceitas() {
+      return lancamentos
+        .filter(lancamento => lancamento.valor > 0)
+        .reduce(
+          (total, lancamento) => total + lancamento.valor,
+          0
+        );
+    }
+
+
+    // Calcula o total de despesas.
+    // Math.abs transforma valores negativos em positivos
+    // para apresentar a despesa como valor monetário.
+    function calcularDespesas() {
+      return lancamentos
+        .filter(lancamento => lancamento.valor < 0)
+        .reduce(
+          (total, lancamento) =>
+            total + Math.abs(lancamento.valor),
+          0
+        );
+    }
+
+
+    // Calcula o saldo líquido.
+    function calcularSaldo() {
+      return calcularReceitas() - calcularDespesas();
+    }
+
+
+    /* ==========================================
+       7. ATUALIZAÇÃO DO DASHBOARD
+       ========================================== */
+
+    function atualizarDashboard() {
+      const receitas = calcularReceitas();
+      const despesas = calcularDespesas();
+      const saldo = receitas - despesas;
+
+      totalReceitas.textContent = formatarMoeda(receitas);
+      totalDespesas.textContent = formatarMoeda(despesas);
+      saldoLiquido.textContent = formatarMoeda(saldo);
+
+      // Remove classes anteriores.
+      saldoLiquido.classList.remove(
+        "saldo-positivo",
+        "saldo-negativo",
+        "saldo-zero"
+      );
+
+      // Altera a aparência do saldo conforme o resultado.
+      if (saldo > 0) {
+        saldoLiquido.classList.add("saldo-positivo");
+      } else if (saldo < 0) {
+        saldoLiquido.classList.add("saldo-negativo");
+      } else {
+        saldoLiquido.classList.add("saldo-zero");
+      }
+    }
+
+
+    /* ==========================================
+       8. MENSAGENS PARA O USUÁRIO
+       ========================================== */
+
+    function mostrarMensagem(texto, tipo) {
+      mensagem.textContent = texto;
+      mensagem.className = `mensagem ${tipo}`;
+
+      setTimeout(() => {
+        mensagem.textContent = "";
+        mensagem.className = "mensagem";
+      }, 3000);
+    }
+
+
+    /* ==========================================
+       9. EXIBIÇÃO DO HISTÓRICO
+       ========================================== */
+
+    function renderizarTabela() {
+      corpoTabela.innerHTML = "";
+
+      // Ordena do lançamento mais recente para o mais antigo.
+      const ordenados = [...lancamentos].sort((a, b) => {
+        return b.data.localeCompare(a.data);
+      });
+
+      if (ordenados.length === 0) {
+        mensagemVazia.style.display = "block";
+        return;
+      }
+
+      mensagemVazia.style.display = "none";
+
+      ordenados.forEach(lancamento => {
+
+        const linha = document.createElement("tr");
+
+        const data = document.createElement("td");
+        data.textContent = formatarData(lancamento.data);
+
+        const descricao = document.createElement("td");
+        descricao.textContent = lancamento.descricao;
+
+        const categoria = document.createElement("td");
+        categoria.textContent = lancamento.categoria;
+
+        const tipo = document.createElement("td");
+        const etiquetaTipo = document.createElement("span");
+
+        if (lancamento.valor > 0) {
+          etiquetaTipo.textContent = "RECEITA";
+          etiquetaTipo.className = "tipo tipo-receita";
+        } else {
+          etiquetaTipo.textContent = "DESPESA";
+          etiquetaTipo.className = "tipo tipo-despesa";
+        }
+
+        tipo.appendChild(etiquetaTipo);
+
+        const valor = document.createElement("td");
+        valor.textContent = formatarMoeda(
+          Math.abs(lancamento.valor)
+        );
+
+        if (lancamento.valor > 0) {
+          valor.className = "valor-tabela-receita";
+        } else {
+          valor.className = "valor-tabela-despesa";
+        }
+
+        const acao = document.createElement("td");
+
+        const botaoExcluir = document.createElement("button");
+        botaoExcluir.type = "button";
+        botaoExcluir.className = "botao-excluir";
+        botaoExcluir.textContent = "X";
+        botaoExcluir.title = "Excluir lançamento";
+
+        botaoExcluir.addEventListener("click", () => {
+          excluirLancamento(lancamento.id);
+        });
+
+        acao.appendChild(botaoExcluir);
+
+        linha.appendChild(data);
+        linha.appendChild(descricao);
+        linha.appendChild(categoria);
+        linha.appendChild(tipo);
+        linha.appendChild(valor);
+        linha.appendChild(acao);
+
+        corpoTabela.appendChild(linha);
+      });
+    }
+
+
+    /* ==========================================
+       10. CADASTRO DE LANÇAMENTOS
+       ========================================== */
+
+    formLancamento.addEventListener("submit", function(evento) {
+
+      evento.preventDefault();
+
+      const descricao = descricaoInput.value.trim();
+      const valor = Number(valorInput.value);
+      const categoria = categoriaInput.value;
+      const data = dataInput.value;
+
+      // Validação da descrição.
+      if (!descricao) {
+        mostrarMensagem(
+          "Digite uma descrição para o lançamento.",
+          "erro"
+        );
+        descricaoInput.focus();
+        return;
+      }
+
+      // Validação do valor.
+      if (!Number.isFinite(valor) || valor === 0) {
+        mostrarMensagem(
+          "Digite um valor diferente de zero.",
+          "erro"
+        );
+        valorInput.focus();
+        return;
+      }
+
+      // Validação da categoria.
+      if (!categoria) {
+        mostrarMensagem(
+          "Selecione uma categoria.",
+          "erro"
+        );
+        categoriaInput.focus();
+        return;
+      }
+
+      // Validação da data.
+      if (!data) {
+        mostrarMensagem(
+          "Informe a data do lançamento.",
+          "erro"
+        );
+        dataInput.focus();
+        return;
+      }
+
+      // Criação do lançamento.
+      const novoLancamento = {
+        id: Date.now(),
+        descricao: descricao,
+        valor: valor,
+        categoria: categoria,
+        data: data
+      };
+
+      lancamentos.push(novoLancamento);
+
+      salvarLancamentos();
+      atualizarInterface();
+
+      formLancamento.reset();
+
+      // Depois de limpar o formulário,
+      // a data volta a ser a data atual.
+      dataInput.value = obterDataHoje();
+
+      mostrarMensagem(
+        "Lançamento adicionado com sucesso!",
+        "sucesso"
+      );
+
+      descricaoInput.focus();
+    });
+
+
+    /* ==========================================
+       11. EXCLUSÃO DE LANÇAMENTOS
+       ========================================== */
+
+    function excluirLancamento(id) {
+
+      const lancamento = lancamentos.find(
+        item => item.id === id
+      );
+
+      if (!lancamento) {
+        return;
+      }
+
+      const confirmar = window.confirm(
+        `Deseja excluir o lançamento "${lancamento.descricao}"?`
+      );
+
+      if (!confirmar) {
+        return;
+      }
+
+      lancamentos = lancamentos.filter(
+        item => item.id !== id
+      );
+
+      salvarLancamentos();
+      atualizarInterface();
+
+      mostrarMensagem(
+        "Lançamento excluído.",
+        "sucesso"
+      );
+    }
+
+
+    /* ==========================================
+       12. EXPORTAÇÃO PARA CSV
+       ========================================== */
+
+    botaoExportar.addEventListener("click", function() {
+
+      if (lancamentos.length === 0) {
+        mostrarMensagem(
+          "Não há lançamentos para exportar.",
+          "erro"
+        );
+        return;
+      }
+
+      // Cabeçalho da planilha.
+      const cabecalho = [
+        "Data",
+        "Descrição",
+        "Categoria",
+        "Tipo",
+        "Valor"
+      ];
+
+      const linhas = lancamentos.map(lancamento => {
+
+        const tipo = lancamento.valor > 0
+          ? "RECEITA"
+          : "DESPESA";
+
+        const valor = Math.abs(lancamento.valor)
+          .toFixed(2)
+          .replace(".", ",");
+
+        // Aspas protegem campos que eventualmente tenham
+        // vírgulas, ponto e vírgula ou outros caracteres.
+        return [
+          formatarData(lancamento.data),
+          `"${escaparCSV(lancamento.descricao)}"`,
+          `"${escaparCSV(lancamento.categoria)}"`,
+          tipo,
+          valor
+        ].join(";");
+      });
+
+      const conteudoCSV = [
+        cabecalho.join(";"),
+        ...linhas
+      ].join("\r\n");
+
+      // BOM UTF-8 para facilitar a leitura dos acentos no Excel.
+      const blob = new Blob(
+        ["\uFEFF" + conteudoCSV],
+        {
+          type: "text/csv;charset=utf-8;"
+        }
+      );
+
+      const url = URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+
+      link.href = url;
+      link.download = "relatorio_ta_sobrando.csv";
+
+      document.body.appendChild(link);
+      link.click();
+
+      link.remove();
+      URL.revokeObjectURL(url);
+
+      mostrarMensagem(
+        "Relatório CSV exportado com sucesso!",
+        "sucesso"
+      );
+    });
+
+
+    // Evita problemas quando o texto possui aspas.
+    function escaparCSV(texto) {
+      return String(texto).replace(/"/g, '""');
+    }
+
+
+    /* ==========================================
+       13. ATUALIZAÇÃO GERAL DA INTERFACE
+       ========================================== */
+
+    function atualizarInterface() {
+      atualizarDashboard();
+      renderizarTabela();
+    }
+
+
+    /* ==========================================
+       14. INICIALIZAÇÃO
+       ========================================== */
+
+    // Preenche a data automaticamente.
+    dataInput.value = obterDataHoje();
+
+    // Carrega os dados e atualiza a tela.
+    atualizarInterface();
+
+  </script>
+
+</body>
+</html>
